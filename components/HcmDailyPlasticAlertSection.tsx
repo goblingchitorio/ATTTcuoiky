@@ -264,7 +264,7 @@ const HcmDailyPlasticAlertSection: React.FC = () => {
                 Phát hiện điểm đen rác thải nhựa mới phát sinh hôm nay tại TP.HCM?
               </h4>
               <p className="text-xs text-zinc-400 max-w-2xl leading-relaxed">
-                Hãy gửi ảnh và vị trí GPS qua biểu mẫu báo cáo. Điểm rác sẽ lập tức được gửi về email ban điều phối <strong className="text-zinc-200">26162051@student.hcmute.edu.vn</strong> để xác nhận và chuyển sang trạng thái <strong>&quot;Trong quá trình xử lý&quot;</strong>.
+                Hãy gửi ảnh và vị trí GPS qua biểu mẫu báo cáo. Điểm rác sẽ lập tức được gửi về email ban điều phối <strong className="text-zinc-200">26162120@student.hcmute.edu.vn</strong> để xác nhận và chuyển sang trạng thái <strong>&quot;Trong quá trình xử lý&quot;</strong>.
               </p>
             </div>
           </div>

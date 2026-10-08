@@ -28,7 +28,7 @@ interface VolunteerRegistryPageProps {
 }
 
 const VOLUNTEER_EMAIL = '26162120@student.hcmute.edu.vn';
-const ADMIN_EMAIL = '26162051@student.hcmute.edu.vn';
+const ADMIN_EMAIL = '26162120@student.hcmute.edu.vn';
 
 // Initial sample data if none in localStorage to ensure the page looks rich and immediately functional
 const DEFAULT_VOLUNTEERS: VolunteerFormData[] = [
@@ -38,8 +38,8 @@ const DEFAULT_VOLUNTEERS: VolunteerFormData[] = [
     phone: '0903 812 456',
     email: 'minh.lehoang@gmail.com',
     hotspotId: 'hs-1',
-    hotspotTitle: 'Cầu Kênh Lương (Kênh Tham Lương - Bến Cát)',
-    hotspotLocation: 'Chân Cầu Tham Lương (Kênh Lương), Q. Tân Bình - Q. 12, TP.HCM',
+    hotspotTitle: 'Kênh Nhiêu Lộc - Thị Nghè (Đoạn Cầu Công Lý - Cầu Điện Biên Phủ)',
+    hotspotLocation: 'Đường Hoàng Sa & Trường Sa, Quận 3 & Bình Thạnh, TP. Hồ Chí Minh',
     availableDate: '2026-10-18',
     notes: 'Có kinh nghiệm tham gia Sài Gòn Xanh, mang theo 2 kẹp gắp rác inox và ủng bảo hộ.',
     createdAt: '08/10/2026 08:30:15',
@@ -51,8 +51,8 @@ const DEFAULT_VOLUNTEERS: VolunteerFormData[] = [
     phone: '0918 765 234',
     email: 'myduyen.tran@student.hcmute.edu.vn',
     hotspotId: 'hs-1',
-    hotspotTitle: 'Cầu Kênh Lương (Kênh Tham Lương - Bến Cát)',
-    hotspotLocation: 'Chân Cầu Tham Lương (Kênh Lương), Q. Tân Bình - Q. 12, TP.HCM',
+    hotspotTitle: 'Kênh Nhiêu Lộc - Thị Nghè (Đoạn Cầu Công Lý - Cầu Điện Biên Phủ)',
+    hotspotLocation: 'Đường Hoàng Sa & Trường Sa, Quận 3 & Bình Thạnh, TP. Hồ Chí Minh',
     availableDate: '2026-10-18',
     notes: 'Sinh viên HCMUTE, đăng ký tham gia hỗ trợ phân loại rác tái chế và truyền thông chụp ảnh.',
     createdAt: '08/10/2026 09:12:40',
@@ -113,12 +113,29 @@ const VolunteerRegistryPage: React.FC<VolunteerRegistryPageProps> = ({ onBackToH
       if (stored) {
         const parsed = JSON.parse(stored);
         if (Array.isArray(parsed) && parsed.length > 0) {
+          // Normalize any previous Tham Lương items for hs-1
+          const normalizedParsed = parsed.map((item: VolunteerFormData) => {
+            if (
+              item.hotspotId === 'hs-1' &&
+              (item.hotspotTitle?.includes('Tham Lương') || item.hotspotTitle?.includes('Kênh Lương'))
+            ) {
+              return {
+                ...item,
+                hotspotTitle: 'Kênh Nhiêu Lộc - Thị Nghè (Đoạn Cầu Công Lý - Cầu Điện Biên Phủ)',
+                hotspotLocation:
+                  'Đường Hoàng Sa & Trường Sa, Quận 3 & Bình Thạnh, TP. Hồ Chí Minh'
+              };
+            }
+            return item;
+          });
           // Merge default with stored avoiding duplicate IDs
-          const storedIds = new Set(parsed.map((item: VolunteerFormData) => item.id || item.phone));
+          const storedIds = new Set(
+            normalizedParsed.map((item: VolunteerFormData) => item.id || item.phone)
+          );
           const missingDefaults = DEFAULT_VOLUNTEERS.filter(
             (d) => !storedIds.has(d.id) && !storedIds.has(d.phone)
           );
-          setVolunteers([...parsed, ...missingDefaults]);
+          setVolunteers([...normalizedParsed, ...missingDefaults]);
           return;
         }
       }

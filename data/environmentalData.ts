@@ -85,11 +85,11 @@ export const BEFORE_AFTER_CASES: BeforeAfterItem[] = [
     id: 'case-1',
     title: 'Kênh Nhiêu Lộc - Thị Nghè (TP. Hồ Chí Minh)',
     location: 'Quận 3 & Bình Thạnh, TP.HCM',
-    beforeImg: 'https://images.unsplash.com/photo-1618477461853-cf6ed80faba5?auto=format&fit=crop&w=900&q=80',
-    afterImg: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=900&q=80',
+    beforeImg: '/kenh_nhieu_loc_before.jpg',
+    afterImg: '/kenh_nhieu_loc_after.jpg',
     beforeLabel: 'Từng nghẹt rác nilon & ô nhiễm đen kịt',
     afterLabel: 'Dòng kênh xanh sạch sau phong trào làm sạch và lắp phao chặn rác',
-    description: 'Từ một "dòng kênh chết" ngập chìm trong hàng tấn rác nhựa trôi nổi mỗi ngày, chiến dịch nạo vét kết hợp hệ thống phao chắn lọc rác tự động đã phục hồi lại cảnh quan xanh hai bên bờ.',
+    description: 'Từ một "dòng kênh chết" ngập chìm trong hàng tấn rác nhựa trôi nổi mỗi ngày, chiến dịch nạo vét kết hợp hệ thống phao chắn lọc rác tự động và tuyến đường Hoàng Sa - Trường Sa rợp bóng cây xanh đã phục hồi hoàn toàn cảnh quan dòng kênh.',
     source: 'Báo Tuổi Trẻ & UBND TP.HCM',
     sourceUrl: 'https://tuoitre.vn/hoi-sinh-kenh-nhieu-loc-thi-nghe-20230605085023964.htm'
   },
@@ -342,17 +342,17 @@ export const SOLUTIONS_BY_LEVEL: Record<string, SolutionItem[]> = {
 export const INITIAL_HOTSPOTS: WasteHotspot[] = [
   {
     id: 'hs-1',
-    title: 'Cầu Kênh Lương (Kênh Tham Lương - Bến Cát)',
-    locationName: 'Chân Cầu Tham Lương (Kênh Lương), Q. Tân Bình - Q. 12, TP.HCM',
-    lat: 10.8256,
-    lng: 106.6189,
+    title: 'Kênh Nhiêu Lộc - Thị Nghè (Đoạn Cầu Công Lý - Cầu Điện Biên Phủ)',
+    locationName: 'Đường Hoàng Sa & Trường Sa, Quận 3 & Bình Thạnh, TP. Hồ Chí Minh',
+    lat: 10.7932,
+    lng: 106.6874,
     severity: 'critical',
     status: 'in_progress',
     isPendingVerification: false,
-    verifiedBy: '26162051@student.hcmute.edu.vn',
+    verifiedBy: '26162120@student.hcmute.edu.vn',
     verifiedAt: '03/10/2026',
-    description: 'Rác thải nhựa, túi nilon, hộp xốp và chai lọ dồn ứ dày đặc khu vực chân cầu Kênh Lương (Kênh Tham Lương) dài hơn 300m, bốc mùi hôi nồng nặc và cản trở dòng chảy. Đang trong quá trình nạo vét và phối hợp dọn sạch.',
-    imageUrl: '/cau_kenh_luong_that.jpg',
+    description: 'Rác thải nhựa, bao bì nilon, hộp xốp và chai lọ dồn ứ sau triều cường khu vực Kênh Nhiêu Lộc - Thị Nghè dài hơn 400m qua Quận 3 và Bình Thạnh. Đang trong quá trình nạo vét, điều động thuyền vớt rác và phối hợp tình nguyện viên dọn sạch dòng kênh.',
+    imageUrl: '/kenh_nhieu_loc_after.jpg',
     reportedAt: '02/10/2026',
     reportedBy: 'CLB Sài Gòn Xanh & Người dân địa phương',
     upvotes: 142,
@@ -362,10 +362,10 @@ export const INITIAL_HOTSPOTS: WasteHotspot[] = [
     statusText: 'Trong quá trình xử lý (Đang trục vớt rác & nạo vét bờ kênh)',
     cleanupDetails: {
       eventDate: 'Chủ nhật, 11/10/2026 (07:00 - 11:30)',
-      meetingPoint: 'Chân cầu Tham Lương (Cầu Kênh Lương), đường Phan Huy Ích, P. 15, Q. Tân Bình',
-      coordinatorName: 'Nguyễn Ngọc Như Ý (Đội trưởng thực địa GENGREEN)',
+      meetingPoint: 'Chân Cầu Công Lý / Cầu Điện Biên Phủ, đường Hoàng Sa, Phường Võ Thị Sáu, Quận 3, TP.HCM',
+      coordinatorName: 'Nguyễn Ngọc Như Ý (Đội trưởng thực địa GENGREEN Kênh Nhiêu Lộc)',
       coordinatorContact: '0934.567.890 / Zalo: GENGREEN Saigon',
-      targetWaste: 'Dự kiến vớt và thu gom ~3.5 tấn rác thải nhựa nổi, bao nilon và hộp xốp',
+      targetWaste: 'Dự kiến vớt và thu gom ~4.5 tấn rác thải nhựa nổi, bao nilon và hộp xốp',
       requiredGear: [
         'Ủng lội nước chuyên dụng (được ban tổ chức hỗ trợ mượn)',
         'Găng tay cao su công nghiệp chống vật nhọn',
@@ -378,7 +378,7 @@ export const INITIAL_HOTSPOTS: WasteHotspot[] = [
         '09:30 - 10:30: Vận chuyển rác lên bờ và tiến hành phân loại rác tái chế',
         '10:30 - 11:30: Cân đo khối lượng rác, bàn giao xe ép rác môi trường đô thị và chụp ảnh kỷ niệm'
       ],
-      sponsorsOrPartners: 'UBND Phường 15 Q. Tân Bình & CLB Sài Gòn Xanh tài trợ bao tải dứa và xe gom rác'
+      sponsorsOrPartners: 'UBND Quận 3, Công ty Môi trường Đô thị TP.HCM (CITENCO) & CLB Sài Gòn Xanh'
     }
   },
   {
@@ -390,7 +390,7 @@ export const INITIAL_HOTSPOTS: WasteHotspot[] = [
     severity: 'critical',
     status: 'pending_verification',
     isPendingVerification: true,
-    description: 'Lượng lớn rác thải nhựa nổi, ly trà sữa và bao bì khó phân hủy dạt vào trụ cầu Chữ Y, đang chờ ban điều phối xác minh thực tế qua email 26162051@student.hcmute.edu.vn.',
+    description: 'Lượng lớn rác thải nhựa nổi, ly trà sữa và bao bì khó phân hủy dạt vào trụ cầu Chữ Y, đang chờ ban điều phối xác minh thực tế qua email 26162120@student.hcmute.edu.vn.',
     imageUrl: 'https://images.unsplash.com/photo-1605600659873-d808a13e4d2a?auto=format&fit=crop&w=700&q=80',
     reportedAt: 'Hôm nay',
     reportedBy: 'Người dân Quận 8 phản ánh',
@@ -398,7 +398,7 @@ export const INITIAL_HOTSPOTS: WasteHotspot[] = [
     hasUpvoted: false,
     volunteersNeeded: 20,
     volunteersJoined: 3,
-    statusText: 'Chờ xác nhận (Đang chờ admin 26162051@student.hcmute.edu.vn duyệt)'
+    statusText: 'Chờ xác nhận (Đang chờ admin 26162120@student.hcmute.edu.vn duyệt)'
   },
   {
     id: 'hs-2',

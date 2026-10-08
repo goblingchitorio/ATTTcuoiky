@@ -321,6 +321,46 @@ const CleanupActivityModal: React.FC<CleanupActivityModalProps> = ({
                 </ul>
               </div>
 
+              {/* MINI-MAP TRỰC TIẾP TRONG KẾ HOẠCH DỌN RÁC */}
+              <div className="rounded-xl overflow-hidden border-2 border-emerald-500/50 bg-zinc-950 shadow-md">
+                <div className="px-3.5 py-2 bg-zinc-900 border-b border-zinc-800 flex items-center justify-between text-xs">
+                  <div className="flex items-center gap-1.5 text-zinc-200 font-semibold">
+                    <MapPin className="w-4 h-4 text-rose-500" />
+                    <span>Bản đồ vị trí ra quân: <strong>{hotspot.locationName}</strong></span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setActiveTab('map_osm')}
+                      className="text-emerald-400 hover:text-emerald-300 font-bold hover:underline text-[11px]"
+                    >
+                      Phóng to bản đồ ↗
+                    </button>
+                    <span className="text-zinc-600">·</span>
+                    <a
+                      href={`https://www.google.com/maps/dir/?api=1&destination=${hotspot.lat},${hotspot.lng}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-400 hover:text-blue-300 font-bold hover:underline text-[11px] flex items-center gap-1"
+                    >
+                      <Navigation className="w-3 h-3" />
+                      <span>Chỉ đường</span>
+                    </a>
+                  </div>
+                </div>
+                <div className="relative h-44 sm:h-48 w-full bg-zinc-950 overflow-hidden">
+                  <iframe
+                    title={`Bản đồ nhỏ: ${hotspot.title}`}
+                    className="w-full h-full border-0 filter contrast-105"
+                    src={`https://www.openstreetmap.org/export/embed.html?bbox=${hotspot.lng - 0.008}%2C${hotspot.lat - 0.006}%2C${hotspot.lng + 0.008}%2C${hotspot.lat + 0.006}&layer=mapnik&marker=${hotspot.lat}%2C${hotspot.lng}`}
+                    loading="eager"
+                  />
+                  <div className="absolute bottom-2 left-2 px-2.5 py-1 rounded-lg bg-zinc-950/90 border border-zinc-800 text-[10px] text-zinc-300 font-mono pointer-events-none shadow">
+                    📍 GPS: {hotspot.lat}, {hotspot.lng}
+                  </div>
+                </div>
+              </div>
+
               {details.resultSummary && (
                 <div className="p-3.5 rounded-xl bg-emerald-950/40 border border-emerald-500/40 text-xs text-emerald-300">
                   🎉 <strong>Kết quả thực tế:</strong> {details.resultSummary}

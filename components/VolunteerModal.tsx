@@ -12,7 +12,9 @@ import {
   Send,
   Loader2,
   ExternalLink,
-  ShieldCheck
+  ShieldCheck,
+  MapPin,
+  Navigation
 } from 'lucide-react';
 import { Facebook } from './FacebookIcon';
 
@@ -23,7 +25,7 @@ interface VolunteerModalProps {
 }
 
 const VOLUNTEER_EMAIL = '26162120@student.hcmute.edu.vn';
-const ADMIN_EMAIL = '26162051@student.hcmute.edu.vn';
+const ADMIN_EMAIL = '26162120@student.hcmute.edu.vn';
 
 const VolunteerModal: React.FC<VolunteerModalProps> = ({ hotspot, onClose, onSuccess }) => {
   const [formData, setFormData] = useState({
@@ -229,10 +231,42 @@ const VolunteerModal: React.FC<VolunteerModalProps> = ({ hotspot, onClose, onSuc
               </div>
             </div>
 
-            <p className="text-xs text-zinc-400 mb-3 leading-relaxed">
+            <p className="text-xs text-zinc-400 mb-2.5 leading-relaxed">
               Địa điểm: <strong className="text-zinc-300">{hotspot.locationName}</strong> · Đã có{' '}
               <strong className="text-emerald-400">{hotspot.volunteersJoined}</strong> / {hotspot.volunteersNeeded} tình nguyện viên đăng ký.
             </p>
+
+            {/* BẢN ĐỒ NHỎ ĐỊNH VỊ ĐIỂM RA QUÂN DỌN RÁC (HIỆN RÕ VỊ TRÍ) */}
+            <div className="mb-3.5 rounded-xl overflow-hidden border-2 border-emerald-500/50 bg-zinc-950 shadow-md">
+              <div className="px-3 py-1.5 bg-zinc-900 border-b border-zinc-800 flex items-center justify-between text-[11px]">
+                <div className="flex items-center gap-1.5 text-zinc-200 font-semibold truncate max-w-[240px]">
+                  <MapPin className="w-3.5 h-3.5 text-rose-500 shrink-0" />
+                  <span className="truncate">{hotspot.locationName}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <a
+                    href={`https://www.google.com/maps/dir/?api=1&destination=${hotspot.lat},${hotspot.lng}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-emerald-400 hover:text-emerald-300 font-semibold flex items-center gap-1 hover:underline text-[11px]"
+                  >
+                    <Navigation className="w-3 h-3" />
+                    <span>Chỉ đường</span>
+                  </a>
+                </div>
+              </div>
+              <div className="relative h-36 w-full bg-zinc-950 overflow-hidden">
+                <iframe
+                  title={`Bản đồ điểm dọn rác: ${hotspot.title}`}
+                  className="w-full h-full border-0 filter contrast-105"
+                  src={`https://www.openstreetmap.org/export/embed.html?bbox=${hotspot.lng - 0.008}%2C${hotspot.lat - 0.006}%2C${hotspot.lng + 0.008}%2C${hotspot.lat + 0.006}&layer=mapnik&marker=${hotspot.lat}%2C${hotspot.lng}`}
+                  loading="eager"
+                />
+                <div className="absolute bottom-1.5 left-2 px-2 py-0.5 rounded bg-zinc-950/90 border border-zinc-800 text-[10px] text-zinc-300 font-mono pointer-events-none shadow">
+                  📍 GPS: {hotspot.lat}, {hotspot.lng}
+                </div>
+              </div>
+            </div>
 
             {/* Target Email Notice Banner */}
             <div className="p-3 rounded-xl bg-emerald-950/40 border border-emerald-500/30 flex items-start gap-2.5 text-xs text-emerald-200 mb-4">

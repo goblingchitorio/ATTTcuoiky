@@ -1,4 +1,4 @@
-import React, { useState, useRef, useCallback } from 'react';
+import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { BeforeAfterItem } from '../types';
 import { MoveHorizontal, Sparkles, AlertOctagon, ExternalLink } from 'lucide-react';
 
@@ -9,7 +9,19 @@ interface BeforeAfterSliderProps {
 const BeforeAfterSlider: React.FC<BeforeAfterSliderProps> = ({ item }) => {
   const [sliderPosition, setSliderPosition] = useState(50);
   const [isDragging, setIsDragging] = useState(false);
+  const [containerWidth, setContainerWidth] = useState<number>(0);
   const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const updateWidth = () => {
+      if (containerRef.current) {
+        setContainerWidth(containerRef.current.clientWidth);
+      }
+    };
+    updateWidth();
+    window.addEventListener('resize', updateWidth);
+    return () => window.removeEventListener('resize', updateWidth);
+  }, []);
 
   const handleMove = useCallback((clientX: number) => {
     if (!containerRef.current) return;
@@ -82,7 +94,7 @@ const BeforeAfterSlider: React.FC<BeforeAfterSliderProps> = ({ item }) => {
             alt={item.beforeLabel}
             className="absolute inset-0 w-full h-full object-cover max-w-none"
             style={{
-              width: containerRef.current ? `${containerRef.current.clientWidth}px` : '100%'
+              width: containerWidth > 0 ? `${containerWidth}px` : (containerRef.current?.clientWidth ? `${containerRef.current.clientWidth}px` : '100%')
             }}
           />
         </div>

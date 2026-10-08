@@ -40,7 +40,7 @@ interface CrowdsourcedMapSectionProps {
   onNavigateToRegistry?: () => void;
 }
 
-const ADMIN_EMAIL = '26162051@student.hcmute.edu.vn';
+const ADMIN_EMAIL = '26162120@student.hcmute.edu.vn';
 
 const CITY_PRESETS = [
   { name: 'Hà Nội', lat: 21.0285, lng: 105.8542 },
@@ -120,7 +120,21 @@ const CrowdsourcedMapSection: React.FC<CrowdsourcedMapSectionProps> = ({
     const saved = localStorage.getItem('gengreen_verified_hotspots');
     if (saved) {
       try {
-        return JSON.parse(saved);
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          return parsed.map((h: WasteHotspot) => {
+            if (
+              h.id === 'hs-1' &&
+              (h.imageUrl?.includes('cau_kenh_luong') ||
+                h.title?.includes('Tham Lương') ||
+                h.title?.includes('Kênh Lương'))
+            ) {
+              const freshHs1 = INITIAL_HOTSPOTS.find((item) => item.id === 'hs-1');
+              return freshHs1 || h;
+            }
+            return h;
+          });
+        }
       } catch (e) {}
     }
     return INITIAL_HOTSPOTS.filter((h) => !h.isPendingVerification);
@@ -152,13 +166,13 @@ const CrowdsourcedMapSection: React.FC<CrowdsourcedMapSectionProps> = ({
 
   // Form State
   const [formTitle, setFormTitle] = useState('');
-  const [formLocation, setFormLocation] = useState('Chân cầu Tham Lương, Kênh Lương, Q. Tân Bình, TP.HCM');
-  const [formLat, setFormLat] = useState<number>(10.8256);
-  const [formLng, setFormLng] = useState<number>(106.6189);
+  const [formLocation, setFormLocation] = useState('Kênh Nhiêu Lộc - Thị Nghè, Quận 3 & Bình Thạnh, TP.HCM');
+  const [formLat, setFormLat] = useState<number>(10.7932);
+  const [formLng, setFormLng] = useState<number>(106.6874);
   const [formSeverity, setFormSeverity] = useState<'critical' | 'moderate'>('critical');
   const [formScale, setFormScale] = useState<'Nhỏ' | 'Vừa' | 'Điểm đen tự phát lớn'>('Điểm đen tự phát lớn');
   const [formDescription, setFormDescription] = useState('');
-  const [formImage, setFormImage] = useState<string>('/cau_kenh_luong_that.jpg');
+  const [formImage, setFormImage] = useState<string>('/kenh_nhieu_loc_after.jpg');
 
   // Main Map Refs
   const mapContainerRef = useRef<HTMLDivElement>(null);
@@ -252,7 +266,7 @@ const CrowdsourcedMapSection: React.FC<CrowdsourcedMapSectionProps> = ({
   }, [mapTheme]);
 
   // ==============================================================
-  // 2. REPORT FORM MINI-MAP INITIALIZATION
+  // 2. REPORT FORM MINI-MAP INITIALIZATION (BẢN ĐỒ NHỎ CHỌN TỌA ĐỘ GPS)
   // ==============================================================
   useEffect(() => {
     if (!formMapContainerRef.current) return;
@@ -260,19 +274,20 @@ const CrowdsourcedMapSection: React.FC<CrowdsourcedMapSectionProps> = ({
 
     const miniMap = L.map(formMapContainerRef.current, {
       center: [formLat, formLng],
-      zoom: 12,
+      zoom: 13,
       minZoom: 5,
       maxZoom: 18,
       scrollWheelZoom: true,
-      zoomControl: true,
+      zoomControl: false,
       attributionControl: false
     });
 
+    // Use OpenStreetMap standard tile layer for high reliability & clarity
     const tile = L.tileLayer(
-      'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',
+      'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
       {
-        subdomains: 'abcd',
-        maxZoom: 19
+        maxZoom: 19,
+        attribution: '&copy; OpenStreetMap'
       }
     );
     tile.addTo(miniMap);
@@ -280,15 +295,15 @@ const CrowdsourcedMapSection: React.FC<CrowdsourcedMapSectionProps> = ({
     const redPinIcon = L.divIcon({
       className: 'custom-form-pin',
       html: `
-        <div style="position: relative; width: 34px; height: 34px; display: flex; align-items: center; justify-content: center;">
-          <div style="position: absolute; width: 100%; height: 100%; border-radius: 50%; background: rgba(239,68,68,0.4); animation: ping 1.5s cubic-bezier(0, 0, 0.2, 1) infinite;"></div>
-          <div style="width: 22px; height: 22px; border-radius: 50%; background: #ef4444; border: 3px solid #ffffff; box-shadow: 0 4px 10px rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; color: #fff; font-size: 11px; font-weight: bold;">
+        <div style="position: relative; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center;">
+          <div style="position: absolute; width: 100%; height: 100%; border-radius: 50%; background: rgba(239,68,68,0.45); animation: ping 1.5s cubic-bezier(0, 0, 0.2, 1) infinite;"></div>
+          <div style="width: 24px; height: 24px; border-radius: 50%; background: #ef4444; border: 3px solid #ffffff; box-shadow: 0 4px 10px rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; color: #fff; font-size: 13px; font-weight: bold;">
             📍
           </div>
         </div>
       `,
-      iconSize: [34, 34],
-      iconAnchor: [17, 17]
+      iconSize: [36, 36],
+      iconAnchor: [18, 18]
     });
 
     const marker = L.marker([formLat, formLng], {
@@ -319,9 +334,40 @@ const CrowdsourcedMapSection: React.FC<CrowdsourcedMapSectionProps> = ({
     });
 
     formMapInstanceRef.current = miniMap;
-    setTimeout(() => miniMap.invalidateSize(), 300);
+
+    // Multi-stage size invalidation to guarantee map renders even if parent container was hidden or animated
+    const timer1 = setTimeout(() => miniMap.invalidateSize(), 100);
+    const timer2 = setTimeout(() => miniMap.invalidateSize(), 300);
+    const timer3 = setTimeout(() => miniMap.invalidateSize(), 800);
+    const timer4 = setTimeout(() => miniMap.invalidateSize(), 1500);
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          miniMap.invalidateSize();
+        }
+      });
+    }, { threshold: 0.05 });
+
+    if (formMapContainerRef.current) {
+      observer.observe(formMapContainerRef.current);
+    }
+
+    const resizeObserver = new ResizeObserver(() => {
+      miniMap.invalidateSize();
+    });
+
+    if (formMapContainerRef.current) {
+      resizeObserver.observe(formMapContainerRef.current);
+    }
 
     return () => {
+      clearTimeout(timer1);
+      clearTimeout(timer2);
+      clearTimeout(timer3);
+      clearTimeout(timer4);
+      observer.disconnect();
+      resizeObserver.disconnect();
       miniMap.remove();
       formMapInstanceRef.current = null;
     };
@@ -543,7 +589,7 @@ const CrowdsourcedMapSection: React.FC<CrowdsourcedMapSectionProps> = ({
       status: 'pending_verification',
       isPendingVerification: true,
       description: `${formDescription} (Quy mô: ${formScale})`,
-      imageUrl: formImage || '/cau_kenh_luong_that.jpg',
+      imageUrl: formImage || '/kenh_nhieu_loc_after.jpg',
       reportedAt: 'Vừa gửi (Hôm nay)',
       reportedBy: 'Người dân địa phương gửi báo cáo',
       upvotes: 1,
@@ -1118,19 +1164,100 @@ const CrowdsourcedMapSection: React.FC<CrowdsourcedMapSectionProps> = ({
                     className="w-full px-3.5 py-2 rounded-xl bg-zinc-950 border border-zinc-700 text-white placeholder:text-zinc-500 mb-2 focus:outline-none focus:border-emerald-500"
                   />
 
-                  {/* MINI-MAP IN FORM */}
-                  <div className="relative rounded-xl overflow-hidden border border-zinc-700 h-36 bg-zinc-950 mb-2">
-                    <div ref={formMapContainerRef} className="w-full h-full z-0" />
-                    <div className="absolute bottom-1.5 left-1.5 z-10 px-2 py-0.5 rounded bg-zinc-950/90 text-[10px] text-zinc-300 border border-zinc-800">
-                      Kéo thả ghim đỏ 📍 để chỉnh vị trí
+                  {/* MINI-MAP IN FORM (BẢN ĐỒ NHỎ TƯƠNG TÁC) */}
+                  <div className="relative rounded-2xl overflow-hidden border-2 border-emerald-500/50 h-52 min-h-[208px] bg-zinc-950 mb-2.5 shadow-xl group">
+                    <div
+                      ref={formMapContainerRef}
+                      className="w-full h-full z-0 cursor-crosshair"
+                      onClick={() => formMapInstanceRef.current?.invalidateSize()}
+                      onMouseEnter={() => formMapInstanceRef.current?.invalidateSize()}
+                    />
+                    
+                    {/* Controls overlay */}
+                    <div className="absolute top-2 right-2 z-10 flex flex-col gap-1.5">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (formMapInstanceRef.current) {
+                            formMapInstanceRef.current.zoomIn();
+                            formMapInstanceRef.current.invalidateSize();
+                          }
+                        }}
+                        className="w-7 h-7 rounded-lg bg-zinc-950/90 hover:bg-zinc-800 text-white border border-zinc-700 flex items-center justify-center text-sm font-bold shadow-md transition-colors"
+                        title="Phóng to"
+                      >
+                        +
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (formMapInstanceRef.current) {
+                            formMapInstanceRef.current.zoomOut();
+                            formMapInstanceRef.current.invalidateSize();
+                          }
+                        }}
+                        className="w-7 h-7 rounded-lg bg-zinc-950/90 hover:bg-zinc-800 text-white border border-zinc-700 flex items-center justify-center text-sm font-bold shadow-md transition-colors"
+                        title="Thu nhỏ"
+                      >
+                        -
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (formMapInstanceRef.current) {
+                            formMapInstanceRef.current.setView([formLat, formLng], 14);
+                            formMapInstanceRef.current.invalidateSize();
+                          }
+                        }}
+                        className="w-7 h-7 rounded-lg bg-emerald-950/90 hover:bg-emerald-800 text-emerald-300 border border-emerald-500/60 flex items-center justify-center text-xs shadow-md transition-colors"
+                        title="Căn giữa ghim đỏ"
+                      >
+                        🎯
+                      </button>
+                    </div>
+
+                    <div className="absolute bottom-2 left-2 z-10 px-2.5 py-1 rounded-lg bg-zinc-950/90 backdrop-blur-md text-[11px] text-zinc-200 border border-zinc-700/80 flex items-center gap-1.5 shadow-lg pointer-events-none">
+                      <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                      <span>Bấm bản đồ hoặc kéo ghim đỏ 📍 để chọn tọa độ</span>
                     </div>
                   </div>
 
-                  <div className="flex items-center justify-between text-[11px] text-zinc-400 bg-zinc-950/60 px-3 py-1.5 rounded-lg border border-zinc-800/80">
-                    <span>Tọa độ ghim:</span>
-                    <strong className="text-emerald-400 font-mono">
-                      {formLat}, {formLng}
-                    </strong>
+                  {/* Vị trí mẫu gợi ý nhanh tại TP.HCM */}
+                  <div className="mb-2">
+                    <div className="text-[10px] font-semibold text-zinc-400 uppercase tracking-wider mb-1 flex items-center justify-between">
+                      <span>Chọn nhanh điểm nóng TP.HCM:</span>
+                      <span className="text-emerald-400 font-mono text-[10px]">{formLat}, {formLng}</span>
+                    </div>
+                    <div className="flex flex-wrap gap-1.5">
+                      <button
+                        type="button"
+                        onClick={() => updatePinCoordinates(10.7932, 106.6874, 'Kênh Nhiêu Lộc - Thị Nghè, Quận 3 & Bình Thạnh, TP.HCM')}
+                        className="px-2 py-1 rounded-lg bg-zinc-950 hover:bg-emerald-950/60 border border-zinc-800 hover:border-emerald-500/60 text-[10px] text-zinc-300 hover:text-emerald-300 transition-all font-medium"
+                      >
+                        📍 Kênh Nhiêu Lộc - Thị Nghè
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => updatePinCoordinates(10.8285, 106.6267, 'Chân cầu Tham Lương, Kênh Lương, P. 15, Q. Tân Bình, TP.HCM')}
+                        className="px-2 py-1 rounded-lg bg-zinc-950 hover:bg-emerald-950/60 border border-zinc-800 hover:border-emerald-500/60 text-[10px] text-zinc-300 hover:text-emerald-300 transition-all font-medium"
+                      >
+                        📍 Kênh Tham Lương
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => updatePinCoordinates(10.7485, 106.6854, 'Chân Cầu Chữ Y, Kênh Đôi & Kênh Tẻ, Quận 8, TP.HCM')}
+                        className="px-2 py-1 rounded-lg bg-zinc-950 hover:bg-emerald-950/60 border border-zinc-800 hover:border-emerald-500/60 text-[10px] text-zinc-300 hover:text-emerald-300 transition-all font-medium"
+                      >
+                        📍 Kênh Đôi (Quận 8)
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => updatePinCoordinates(10.8506, 106.7721, 'Đại học Sư phạm Kỹ thuật TP.HCM (HCMUTE), TP. Thủ Đức')}
+                        className="px-2 py-1 rounded-lg bg-zinc-950 hover:bg-emerald-950/60 border border-zinc-800 hover:border-emerald-500/60 text-[10px] text-zinc-300 hover:text-emerald-300 transition-all font-medium"
+                      >
+                        📍 HCMUTE Thủ Đức
+                      </button>
+                    </div>
                   </div>
                 </div>
 
